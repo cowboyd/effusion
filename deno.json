@@ -1,0 +1,11 @@
+{
+  "lint": {
+    "rules": {
+      "exclude": ["prefer-const"]
+    }
+  },
+  "imports": {
+    "effection": "npm:effection@4.0.0-alpha.3",
+    "yoga-layout": "npm:yoga-layout@^3.1.0",
+  }
+}
