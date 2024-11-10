@@ -54,7 +54,7 @@ describe("borders", () => {
       "┌───┐",
       "│   │",
     ]);
-  });  
+  });
 
   it("renders a height of one border box with just a single line", () => {
     let box = [
@@ -71,18 +71,17 @@ describe("borders", () => {
   });
 
   it("can render a large box", () => {
-    expect(compute(true, { height: 10, width: 10})).toMatchBox([
+    expect(compute(true, { height: 10, width: 10 })).toMatchBox([
       "┌────────┐",
       "│        │",
       "│        │",
       "│        │",
       "│        │",
       "│        │",
-      "│        │",      
       "│        │",
-      "│        │",      
+      "│        │",
+      "│        │",
       "└────────┘",
-    ])
-    
+    ]);
   });
 });

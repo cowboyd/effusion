@@ -8,17 +8,25 @@ import {
   sleep,
   withResolvers,
 } from "effection";
+import type { Area, Glyph, Offset } from "./types.ts";
 
-interface UINode {
+export interface UINode {
   yoga: Node;
+  offset: Offset;
   remove(): Operation<void>;
   content: Set<UINode>;
+  paint(area: Area): Glyph;
 }
 
 export const UIParentContext = createContext<UINode>(`ui.parent`);
 
+export function useUIParent() {
+  return UIParentContext.expect();
+}
+
 interface CreateUINodeOptions {
   yoga?: Node;
+  paint?(area: Area): Glyph;
 }
 
 export function createUINode(options: CreateUINodeOptions): Operation<UINode> {
@@ -35,7 +43,26 @@ export function createUINode(options: CreateUINodeOptions): Operation<UINode> {
       yield* sleep(0); //TODO: why?
     }
 
-    let node = { yoga, content, remove };
+    let paint = options.paint ?? ((area: Area) => ({ area, pixels: [] }));
+
+    let node = {
+      yoga,
+      content,
+      remove,
+      paint,
+      get offset() {
+        let { top, left } = yoga.getComputedLayout();
+        for (
+          let current = yoga.getParent();
+          current;
+          current = current.getParent()
+        ) {
+          top += current.getComputedTop();
+          left += current.getComputedLeft();
+        }
+        return { top, left };
+      },
+    };
 
     if (parent) {
       parent.yoga.insertChild(yoga, parent.yoga.getChildCount());

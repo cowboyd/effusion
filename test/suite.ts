@@ -25,7 +25,9 @@ $expect.extend({
         message: () => `expected to match a border path`,
       };
     }
-    let drawing: string[][] = Array(glyph.area.height).fill(null).map(() => Array(glyph.area.width).fill(null).map(() => " "));
+    let drawing: string[][] = Array(glyph.area.height).fill(null).map(() =>
+      Array(glyph.area.width).fill(null).map(() => " ")
+    );
     for (let pixel of glyph.pixels) {
       let row = drawing[pixel.offset.top];
       if (!row) {
