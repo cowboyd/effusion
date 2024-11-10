@@ -1,5 +1,5 @@
 import { pixel } from "./pixel.ts";
-import { Pixel, Area, Glyph } from "./types.ts";
+import { Area, Glyph, Pixel } from "./types.ts";
 
 export const horizontal = "─";
 export const vertical = "│";
@@ -17,15 +17,13 @@ export type BorderEdges = {
   right?: boolean;
 };
 
-
 export function compute(decl: BorderDeclaration, area: Area): Glyph {
   if (typeof decl === "boolean") {
     if (!decl) {
-      return { area, pixels: []};
+      return { area, pixels: [] };
     } else {
-      decl = { top: true, left: true, bottom: true, right: true }
+      decl = { top: true, left: true, bottom: true, right: true };
     }
-
   }
 
   let { height, width } = area;
@@ -58,11 +56,11 @@ function corners(decl: BorderEdges, area: Area): Pixel[] {
   //top left
   if (decl.top || decl.left) {
     if (decl.top && !decl.left) {
-      corners.push(pixel(0,0, horizontal));
+      corners.push(pixel(0, 0, horizontal));
     } else if (!decl.top && decl.left) {
-      corners.push(pixel(0,0, vertical));
+      corners.push(pixel(0, 0, vertical));
     } else {
-      corners.push(pixel(0,0, cornerTopLeft));
+      corners.push(pixel(0, 0, cornerTopLeft));
     }
   }
   //bottom left
@@ -83,7 +81,7 @@ function corners(decl: BorderEdges, area: Area): Pixel[] {
     } else if (!decl.bottom && decl.right) {
       corners.push(pixel(area.height - 1, area.width - 1, vertical));
     } else {
-      corners.push(pixel(area.height -1 , area.width - 1, cornerBottomRight));
+      corners.push(pixel(area.height - 1, area.width - 1, cornerBottomRight));
     }
   }
 
@@ -103,17 +101,32 @@ function corners(decl: BorderEdges, area: Area): Pixel[] {
 function sides(decl: BorderEdges, area: Area): Pixel[] {
   let pixels = [];
   if (decl.top) {
-    pixels.push(...Array(Math.max(area.width - 2, 0)).fill(null).map((_,i) => pixel(0, i + 1, horizontal)));
+    pixels.push(
+      ...Array(Math.max(area.width - 2, 0)).fill(null).map((_, i) =>
+        pixel(0, i + 1, horizontal)
+      ),
+    );
   }
   if (decl.bottom) {
-    pixels.push(...Array(Math.max(area.width - 2, 0)).fill(null).map((_,i) => pixel(area.height - 1, i + 1, horizontal)));
+    pixels.push(
+      ...Array(Math.max(area.width - 2, 0)).fill(null).map((_, i) =>
+        pixel(area.height - 1, i + 1, horizontal)
+      ),
+    );
   }
   if (decl.left) {
-    pixels.push(...Array(Math.max(area.height - 2, 0)).fill(null).map((_,i) => pixel(i + 1, 0, vertical)));
+    pixels.push(
+      ...Array(Math.max(area.height - 2, 0)).fill(null).map((_, i) =>
+        pixel(i + 1, 0, vertical)
+      ),
+    );
   }
   if (decl.right) {
-    pixels.push(...Array(Math.max(area.height - 2, 0)).fill(null).map((_,i) => pixel(i + 1, area.width, vertical)));
+    pixels.push(
+      ...Array(Math.max(area.height - 2, 0)).fill(null).map((_, i) =>
+        pixel(i + 1, area.width - 1, vertical)
+      ),
+    );
   }
   return pixels;
 }
-
