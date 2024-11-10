@@ -1,7 +1,16 @@
-import { createContext, Operation } from "effection";
+import { createContext, each, on, Operation, resource, spawn } from "effection";
 import { Area, Glyph, Offset } from "./types.ts";
-import { UINode } from "./node.ts";
-import { clearBuffer, say, setCursor } from "./terminal.ts";
+import { createUINode, UINode, UIParentContext } from "./node.ts";
+import {
+  clearBuffer,
+  hideCursor,
+  say,
+  setCursor,
+  showCursor,
+  useAlternateBuffer,
+} from "./terminal.ts";
+import Yoga from "yoga-layout";
+import { resizes } from "./resizes.ts";
 
 export interface Screen {
   draw(glyph: Glyph, offset: Offset): void;
@@ -15,8 +24,38 @@ export function useScreen() {
   return ScreenContext.expect();
 }
 
-export function initScreen(area: Area, root: UINode): Operation<Screen> {
-  return ScreenContext.set(createScreen(area, root));
+export function* initScreen(): Operation<Screen> {
+  let consoleSize = Deno.consoleSize();
+  let area: Area = { height: consoleSize.rows, width: consoleSize.columns };
+
+  const config = Yoga.Config.create();
+  config.setPointScaleFactor(0);
+
+  const yoga = Yoga.Node.create(config);
+
+  let root = yield* UIParentContext.set(yield* createUINode({ yoga }));
+
+  let screen = createScreen(area, root);
+
+  yield* resource<void>(function* (provide) {
+    yield* spawn(function* () {
+      for (let size of yield* each(resizes)) {
+        yield* screen.resize(size);
+        yield* each.next();
+      }
+    });
+
+    try {
+      yield* useAlternateBuffer();
+      yield* hideCursor();
+      yield* provide();
+    } finally {
+      yield* showCursor();
+      config.free();
+    }
+  });
+
+  return yield* ScreenContext.set(createScreen(area, root));
 }
 
 function createScreen(area: Area, root: UINode): Screen {
