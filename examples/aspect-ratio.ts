@@ -9,7 +9,7 @@ await example(function* () {
     padding: 1,
     alignItems: "flex-start",
   }, function* () {
-    yield* Box({ height: 10, width: 20, border: true });
-    yield* Box({ height: 10, width: 20, border: true, alignSelf: "center" });
+    yield* Box({ height: 10, border: true, aspectRatio: 2 });
+    yield* Box({ height: 10, border: true, aspectRatio: 4 });
   });
 });

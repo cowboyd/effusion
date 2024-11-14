@@ -30,6 +30,7 @@ export interface BoxAttrs {
   alignItems?: string;
   flexWrap?: "wrap" | "no-wrap" | "wrap-reverse";
   border?: BorderDeclaration;
+  aspectRatio?: number;
 }
 
 export function* Box(attrs: BoxAttrs, content?: () => Operation<void>) {
@@ -133,6 +134,9 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
     } else if (value === "space-evenly") {
       node.setAlignSelf(YAlign.SpaceEvenly);
     }
+  }
+  if (typeof attrs.aspectRatio !== "undefined") {
+    node.setAspectRatio(attrs.aspectRatio);
   }
 }
 
