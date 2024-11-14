@@ -1,4 +1,4 @@
-import { createContext, each, on, Operation, resource, spawn } from "effection";
+import { createContext, each, Operation, resource, spawn } from "effection";
 import { Area, Glyph, Offset } from "./types.ts";
 import { createUINode, UINode, UIParentContext } from "./node.ts";
 import {
@@ -39,8 +39,8 @@ export function* initScreen(): Operation<Screen> {
 
   yield* resource<void>(function* (provide) {
     yield* spawn(function* () {
-      for (let size of yield* each(resizes)) {
-        yield* screen.resize(size);
+      for (let area of yield* each(resizes)) {
+        yield* screen.resize(area);
         yield* each.next();
       }
     });
@@ -114,9 +114,8 @@ function createScreen(area: Area, root: UINode): Screen {
     },
 
     *resize(area) {
-      console.log({ area });
-      height = area.width;
-      width = area.height;
+      height = area.height;
+      width = area.width;
       current = fit([]);
       next = fit([]);
       yield* clearBuffer();
