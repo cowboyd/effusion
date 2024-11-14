@@ -6,7 +6,7 @@ export const resizes: Stream<Area, never> = resource(function* (provide) {
   const subscription = yield* signal;
   let send = () => {
     let size = Deno.consoleSize();
-    signal.send({ height: size.rows, width: size.columns});
+    signal.send({ height: size.rows, width: size.columns });
   };
 
   try {

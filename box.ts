@@ -1,23 +1,33 @@
 import { Operation } from "effection";
 import { BorderDeclaration, compute } from "./border.ts";
 import { createUINode, UIParentContext } from "./node.ts";
-import { Align, Edge, type Node, Wrap } from "yoga-layout";
+import { Align as YAlign, Edge, type Node, Wrap } from "yoga-layout";
+
+export type Align =
+  | "auto"
+  | "flex-start"
+  | "center"
+  | "flex-end"
+  | "stretch"
+  | "baseline"
+  | "space-between"
+  | "space-around"
+  | "space-evenly";
 
 export interface BoxAttrs {
   height?: number | "auto" | `${number}%`;
   width?: number | "auto" | `${number}%`;
   flex?: number;
+  margin?: number | "auto" | `${number}%` | {
+    top?: number | "auto" | `${number}%`;
+    left?: number | "auto" | `${number}%`;
+    bottom?: number | "auto" | `${number}%`;
+    right?: number | "auto" | `${number}%`;
+  };
   padding?: number;
-  alignContent?:
-    | "auto"
-    | "flex-start"
-    | "center"
-    | "flex-end"
-    | "stretch"
-    | "baseline"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
+  alignContent?: Align;
+  alignSelf?: Align;
+  alignItems?: string;
   flexWrap?: "wrap" | "no-wrap" | "wrap-reverse";
   border?: BorderDeclaration;
 }
@@ -54,23 +64,23 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
   if (attrs.alignContent) {
     let value = attrs.alignContent;
     if (value === "auto") {
-      node.setAlignContent(Align.Auto);
+      node.setAlignContent(YAlign.Auto);
     } else if (value === "flex-start") {
-      node.setAlignContent(Align.FlexStart);
+      node.setAlignContent(YAlign.FlexStart);
     } else if (value === "center") {
-      node.setAlignContent(Align.Center);
+      node.setAlignContent(YAlign.Center);
     } else if (value === "flex-end") {
-      node.setAlignContent(Align.FlexEnd);
+      node.setAlignContent(YAlign.FlexEnd);
     } else if (value === "stretch") {
-      node.setAlignContent(Align.Stretch);
+      node.setAlignContent(YAlign.Stretch);
     } else if (value === "baseline") {
-      node.setAlignContent(Align.Baseline);
+      node.setAlignContent(YAlign.Baseline);
     } else if (value === "space-between") {
-      node.setAlignContent(Align.SpaceBetween);
+      node.setAlignContent(YAlign.SpaceBetween);
     } else if (value === "space-around") {
-      node.setAlignContent(Align.SpaceAround);
+      node.setAlignContent(YAlign.SpaceAround);
     } else if (value === "space-evenly") {
-      node.setAlignContent(Align.SpaceEvenly);
+      node.setAlignContent(YAlign.SpaceEvenly);
     }
   }
   if (attrs.flexWrap) {
@@ -81,6 +91,47 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
       node.setFlexWrap(Wrap.NoWrap);
     } else if (value === "wrap-reverse") {
       node.setFlexWrap(Wrap.WrapReverse);
+    }
+  }
+  if (attrs.margin) {
+    let value = attrs.margin;
+    if (typeof value === "number" || typeof value === "string") {
+      node.setMargin(Edge.All, value);
+    } else {
+      if (value.top) {
+        node.setMargin(Edge.Top, value.top);
+      }
+      if (value.left) {
+        node.setMargin(Edge.Left, value.left);
+      }
+      if (value.bottom) {
+        node.setMargin(Edge.Bottom, value.bottom);
+      }
+      if (value.right) {
+        node.setMargin(Edge.Right, value.right);
+      }
+    }
+  }
+  if (attrs.alignSelf) {
+    let value = attrs.alignSelf;
+    if (value === "auto") {
+      node.setAlignSelf(YAlign.Auto);
+    } else if (value === "flex-start") {
+      node.setAlignSelf(YAlign.FlexStart);
+    } else if (value === "center") {
+      node.setAlignSelf(YAlign.Center);
+    } else if (value === "flex-end") {
+      node.setAlignSelf(YAlign.FlexEnd);
+    } else if (value === "stretch") {
+      node.setAlignSelf(YAlign.Stretch);
+    } else if (value === "baseline") {
+      node.setAlignSelf(YAlign.Baseline);
+    } else if (value === "space-between") {
+      node.setAlignSelf(YAlign.SpaceBetween);
+    } else if (value === "space-around") {
+      node.setAlignSelf(YAlign.SpaceAround);
+    } else if (value === "space-evenly") {
+      node.setAlignSelf(YAlign.SpaceEvenly);
     }
   }
 }
