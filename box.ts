@@ -1,7 +1,7 @@
 import { Operation } from "effection";
 import { BorderDeclaration, compute } from "./border.ts";
 import { createUINode, UIParentContext } from "./node.ts";
-import { Align as YAlign, Edge, type Node, Wrap } from "yoga-layout";
+import { Align as YAlign, Edge, type Node, Wrap, Display } from "yoga-layout";
 
 export type Align =
   | "auto"
@@ -24,13 +24,19 @@ export interface BoxAttrs {
     bottom?: number | "auto" | `${number}%`;
     right?: number | "auto" | `${number}%`;
   };
-  padding?: number;
+  padding?: number | `${number}%` | {
+    top?: number | `${number}%`;
+    left?: number | `${number}%`;
+    bottom?: number | `${number}%`;
+    right?: number | `${number}%`;
+  };
   alignContent?: Align;
   alignSelf?: Align;
-  alignItems?: string;
+  alignItems?: Align;
   flexWrap?: "wrap" | "no-wrap" | "wrap-reverse";
   border?: BorderDeclaration;
   aspectRatio?: number;
+  display?: "flex" | "none";
 }
 
 export function* Box(attrs: BoxAttrs, content?: () => Operation<void>) {
@@ -59,9 +65,78 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
   if (attrs.flex != null) {
     node.setFlex(attrs.flex);
   }
-  if (attrs.padding) {
-    node.setPadding(Edge.All, attrs.padding);
+  if (attrs.margin) {
+    let value = attrs.margin;
+    if (typeof value === "number" || typeof value === "string") {
+      node.setMargin(Edge.All, value);
+    } else {
+      if (value.top) {
+        node.setMargin(Edge.Top, value.top);
+      }
+      if (value.left) {
+        node.setMargin(Edge.Left, value.left);
+      }
+      if (value.bottom) {
+        node.setMargin(Edge.Bottom, value.bottom);
+      }
+      if (value.right) {
+        node.setMargin(Edge.Right, value.right);
+      }
+    }
   }
+  if (attrs.padding) {
+    let value = attrs.padding;
+    if (typeof value === "number" || typeof value === "string") {
+      node.setPadding(Edge.All, value);
+    } else {
+      if (value.top) {
+        node.setPadding(Edge.Top, value.top);
+      }
+      if (value.left) {
+        node.setPadding(Edge.Left, value.left);
+      }
+      if (value.bottom) {
+        node.setPadding(Edge.Bottom, value.bottom);
+      }
+      if (value.right) {
+        node.setPadding(Edge.Right, value.right);
+      }
+    }
+  }
+  if (attrs.flexWrap) {
+    let value = attrs.flexWrap;
+    if (value === "wrap") {
+      node.setFlexWrap(Wrap.Wrap);
+    } else if (value === "no-wrap") {
+      node.setFlexWrap(Wrap.NoWrap);
+    } else if (value === "wrap-reverse") {
+      node.setFlexWrap(Wrap.WrapReverse);
+    }
+  }
+
+  if (attrs.alignItems) {
+    let value = attrs.alignItems;
+    if (value === "auto") {
+      node.setAlignItems(YAlign.Auto);
+    } else if (value === "flex-start") {
+      node.setAlignItems(YAlign.FlexStart);
+    } else if (value === "center") {
+      node.setAlignItems(YAlign.Center);
+    } else if (value === "flex-end") {
+      node.setAlignItems(YAlign.FlexEnd);
+    } else if (value === "stretch") {
+      node.setAlignItems(YAlign.Stretch);
+    } else if (value === "baseline") {
+      node.setAlignItems(YAlign.Baseline);
+    } else if (value === "space-between") {
+      node.setAlignItems(YAlign.SpaceBetween);
+    } else if (value === "space-around") {
+      node.setAlignItems(YAlign.SpaceAround);
+    } else if (value === "space-evenly") {
+      node.setAlignItems(YAlign.SpaceEvenly);
+    }    
+  }
+  
   if (attrs.alignContent) {
     let value = attrs.alignContent;
     if (value === "auto") {
@@ -84,35 +159,7 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
       node.setAlignContent(YAlign.SpaceEvenly);
     }
   }
-  if (attrs.flexWrap) {
-    let value = attrs.flexWrap;
-    if (value === "wrap") {
-      node.setFlexWrap(Wrap.Wrap);
-    } else if (value === "no-wrap") {
-      node.setFlexWrap(Wrap.NoWrap);
-    } else if (value === "wrap-reverse") {
-      node.setFlexWrap(Wrap.WrapReverse);
-    }
-  }
-  if (attrs.margin) {
-    let value = attrs.margin;
-    if (typeof value === "number" || typeof value === "string") {
-      node.setMargin(Edge.All, value);
-    } else {
-      if (value.top) {
-        node.setMargin(Edge.Top, value.top);
-      }
-      if (value.left) {
-        node.setMargin(Edge.Left, value.left);
-      }
-      if (value.bottom) {
-        node.setMargin(Edge.Bottom, value.bottom);
-      }
-      if (value.right) {
-        node.setMargin(Edge.Right, value.right);
-      }
-    }
-  }
+
   if (attrs.alignSelf) {
     let value = attrs.alignSelf;
     if (value === "auto") {
@@ -137,6 +184,15 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
   }
   if (typeof attrs.aspectRatio !== "undefined") {
     node.setAspectRatio(attrs.aspectRatio);
+  }
+  if (attrs.display) {
+    if (attrs.display === "flex") {
+      node.setDisplay(Display.Flex)      
+    }
+    if (attrs.display === "none") {
+      node.setDisplay(Display.None);
+    }
+    
   }
 }
 
