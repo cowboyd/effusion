@@ -35,6 +35,10 @@ export type Align =
 export interface BoxAttrs {
   height?: number | "auto" | `${number}%`;
   width?: number | "auto" | `${number}%`;
+  minHeight?: number | `${number}%`;
+  minWidth?: number | `${number}%`;
+  maxHeight?: number | `${number}%`;
+  maxWidth?: number | `${number}%`;
   flex?: number;
   flexBasis?: number | "auto" | `${number}%`;
   flexGrow?: number;
@@ -90,12 +94,25 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
   if (attrs.height != null) {
     node.setHeight(attrs.height);
   }
+  if (attrs.minHeight) {
+    node.setMinHeight(attrs.minHeight);
+  }
+  if (attrs.maxHeight) {
+    node.setMaxHeight(attrs.maxHeight);
+  }
+  if (attrs.minWidth) {
+    node.setMinWidth(attrs.minWidth);
+  }
+  if (attrs.maxWidth) {
+    node.setMaxWidth(attrs.maxWidth);
+  }
   if (attrs.width != null) {
     node.setWidth(attrs.width);
   }
   if (attrs.flex != null) {
     node.setFlex(attrs.flex);
   }
+
   if (attrs.margin) {
     let value = attrs.margin;
     if (typeof value === "number" || typeof value === "string") {
