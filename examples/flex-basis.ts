@@ -8,7 +8,7 @@ await example(function* () {
     border: true,
     alignItems: "stretch",
   }, function* () {
-    yield* Box({ margin: 2, height: 10, border: true, display: "none" });
-    yield* Box({ margin: 2, height: 10, border: true, display: "flex" });
+    yield* Box({ margin: 2, flexGrow: 0.25, border: true });
+    yield* Box({ margin: 2, flexGrow: 0.75, border: true });
   });
 });

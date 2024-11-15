@@ -6,9 +6,14 @@ await example(function* () {
     height: "100%",
     width: "100%",
     border: true,
-    alignItems: "stretch",
+    alignContent: "flex-start",
   }, function* () {
-    yield* Box({ margin: 2, height: 10, border: true, display: "none" });
-    yield* Box({ margin: 2, height: 10, border: true, display: "flex" });
+    yield* Box({
+      border: true,
+      flexBasis: 10,
+      aspectRatio: 2,
+      top: 5,
+      left: 10,
+    });
   });
 });

@@ -10,6 +10,6 @@ await example(function* () {
     alignItems: "flex-start",
   }, function* () {
     yield* Box({ height: 10, width: 20, border: true });
-    yield* Box({ height: 10, width: 20, border: true, alignSelf: "center" });
+    yield* Box({ height: 10, width: 20, border: true });
   });
 });

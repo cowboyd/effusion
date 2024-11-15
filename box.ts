@@ -1,7 +1,24 @@
 import { Operation } from "effection";
 import { BorderDeclaration, compute } from "./border.ts";
 import { createUINode, UIParentContext } from "./node.ts";
-import { Align as YAlign, Edge, type Node, Wrap, Display } from "yoga-layout";
+import {
+  Align as YAlign,
+  Display,
+  Edge,
+  FlexDirection,
+  Gutter,
+  Justify as YJustify,
+  type Node,
+  Wrap,
+} from "yoga-layout";
+
+export type Justify =
+  | "center"
+  | "flex-start"
+  | "flex-end"
+  | "space-around"
+  | "space-between"
+  | "space-evenly";
 
 export type Align =
   | "auto"
@@ -18,6 +35,11 @@ export interface BoxAttrs {
   height?: number | "auto" | `${number}%`;
   width?: number | "auto" | `${number}%`;
   flex?: number;
+  flexBasis?: number | "auto" | `${number}%`;
+  flexGrow?: number;
+  flexShrink?: number;
+  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
+  flexWrap?: "wrap" | "no-wrap" | "wrap-reverse";
   margin?: number | "auto" | `${number}%` | {
     top?: number | "auto" | `${number}%`;
     left?: number | "auto" | `${number}%`;
@@ -30,13 +52,20 @@ export interface BoxAttrs {
     bottom?: number | `${number}%`;
     right?: number | `${number}%`;
   };
+  top?: number | `${number}%`;
+  left?: number | `${number}%`;
+  bottom?: number | `${number}%`;
+  right?: number | `${number}%`;
   alignContent?: Align;
   alignSelf?: Align;
   alignItems?: Align;
-  flexWrap?: "wrap" | "no-wrap" | "wrap-reverse";
+  justifyContent?: Justify;
   border?: BorderDeclaration;
   aspectRatio?: number;
   display?: "flex" | "none";
+  gap?: number | `${number}%`;
+  rowGap?: number | `${number}%`;
+  columnGap?: number | `${number}%`;
 }
 
 export function* Box(attrs: BoxAttrs, content?: () => Operation<void>) {
@@ -114,6 +143,31 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
     }
   }
 
+  if (attrs.flexBasis) {
+    node.setFlexBasis(attrs.flexBasis);
+  }
+
+  if (attrs.flexGrow) {
+    node.setFlexGrow(attrs.flexGrow);
+  }
+
+  if (attrs.flexShrink) {
+    node.setFlexShrink(attrs.flexShrink);
+  }
+
+  if (attrs.flexDirection) {
+    let value = attrs.flexDirection;
+    if (value === "row") {
+      node.setFlexDirection(FlexDirection.Row);
+    } else if (value === "column") {
+      node.setFlexDirection(FlexDirection.Column);
+    } else if (value === "row-reverse") {
+      node.setFlexDirection(FlexDirection.RowReverse);
+    } else if (value === "column-reverse") {
+      node.setFlexDirection(FlexDirection.ColumnReverse);
+    }
+  }
+
   if (attrs.alignItems) {
     let value = attrs.alignItems;
     if (value === "auto") {
@@ -134,9 +188,9 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
       node.setAlignItems(YAlign.SpaceAround);
     } else if (value === "space-evenly") {
       node.setAlignItems(YAlign.SpaceEvenly);
-    }    
+    }
   }
-  
+
   if (attrs.alignContent) {
     let value = attrs.alignContent;
     if (value === "auto") {
@@ -182,17 +236,55 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
       node.setAlignSelf(YAlign.SpaceEvenly);
     }
   }
+
+  if (attrs.justifyContent) {
+    let value = attrs.justifyContent;
+    if (value === "flex-start") {
+      node.setJustifyContent(YJustify.FlexStart);
+    } else if (value === "flex-end") {
+      node.setJustifyContent(YJustify.FlexEnd);
+    } else if (value === "center") {
+      node.setJustifyContent(YJustify.Center);
+    } else if (value === "space-around") {
+      node.setJustifyContent(YJustify.SpaceAround);
+    } else if (value === "space-between") {
+      node.setJustifyContent(YJustify.SpaceBetween);
+    } else if (value === "space-evenly") {
+      node.setJustifyContent(YJustify.SpaceEvenly);
+    }
+  }
+
   if (typeof attrs.aspectRatio !== "undefined") {
     node.setAspectRatio(attrs.aspectRatio);
   }
   if (attrs.display) {
     if (attrs.display === "flex") {
-      node.setDisplay(Display.Flex)      
+      node.setDisplay(Display.Flex);
     }
     if (attrs.display === "none") {
       node.setDisplay(Display.None);
     }
-    
+  }
+  if (attrs.gap) {
+    node.setGap(Gutter.All, attrs.gap);
+  }
+  if (attrs.rowGap) {
+    node.setGap(Gutter.Row, attrs.rowGap);
+  }
+  if (attrs.columnGap) {
+    node.setGap(Gutter.Column, attrs.rowGap);
+  }
+  if (attrs.top) {
+    node.setPosition(Edge.Top, attrs.top);
+  }
+  if (attrs.left) {
+    node.setPosition(Edge.Left, attrs.left);
+  }
+  if (attrs.bottom) {
+    node.setPosition(Edge.Bottom, attrs.bottom);
+  }
+  if (attrs.right) {
+    node.setPosition(Edge.Top, attrs.right);
   }
 }
 

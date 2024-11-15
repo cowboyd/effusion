@@ -6,9 +6,9 @@ await example(function* () {
     height: "100%",
     width: "100%",
     border: true,
-    alignItems: "stretch",
+    flexDirection: "row-reverse",
   }, function* () {
-    yield* Box({ margin: 2, height: 10, border: true, display: "none" });
-    yield* Box({ margin: 2, height: 10, border: true, display: "flex" });
+    yield* Box({ margin: 2, flexGrow: 0.25, border: true });
+    yield* Box({ margin: 2, flexGrow: 0.75, border: true });
   });
 });
