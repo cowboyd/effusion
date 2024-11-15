@@ -10,6 +10,7 @@ import {
   Justify as YJustify,
   type Node,
   Wrap,
+  PositionType,
 } from "yoga-layout";
 
 export type Justify =
@@ -56,6 +57,7 @@ export interface BoxAttrs {
   left?: number | `${number}%`;
   bottom?: number | `${number}%`;
   right?: number | `${number}%`;
+  position?: "absolute" | "relative" | "static";
   alignContent?: Align;
   alignSelf?: Align;
   alignItems?: Align;
@@ -285,6 +287,16 @@ function applyFlexStyles(node: Node, attrs: BoxAttrs) {
   }
   if (attrs.right) {
     node.setPosition(Edge.Top, attrs.right);
+  }
+  if (attrs.position) {
+    let value = attrs.position;
+    if (value === "absolute") {
+      node.setPositionType(PositionType.Absolute);
+    } else if (value === "relative") {
+      node.setPositionType(PositionType.Relative);
+    } else if (value === "static") {
+      node.setPositionType(PositionType.Static);
+    }
   }
 }
 
